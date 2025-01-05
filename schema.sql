@@ -1,3 +1,4 @@
+-- Active: 1734431780238@@127.0.0.1@5432@postgres
 CREATE TABLE genres (
     id SERIAL PRIMARY KEY,
     name VARCHAR(255) NOT NULL
