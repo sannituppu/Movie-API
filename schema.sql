@@ -8,7 +8,7 @@ CREATE TABLE movies (
     id SERIAL PRIMARY KEY,
     name VARCHAR(255) NOT NULL,
     year INT NOT NULL,
-    genre_id INT REFERENCES genres(id) ON DELETE SET NULL
+    genre_name VARCHAR(255) NOT NULL
 );
 
 CREATE TABLE users (
@@ -22,14 +22,14 @@ CREATE TABLE users (
 CREATE TABLE reviews (
     id SERIAL PRIMARY KEY,
     movie_id INT REFERENCES movies(id) ON DELETE CASCADE,
-    user_id INT REFERENCES users(id) ON DELETE CASCADE,
+    username VARCHAR(255) REFERENCES users(username) ON DELETE CASCADE,
     stars INT NOT NULL CHECK (stars BETWEEN 1 AND 5),
     review_text TEXT
 );
 
 CREATE TABLE favorites (
     id SERIAL PRIMARY KEY,
-    user_id INT REFERENCES users(id) ON DELETE CASCADE,
+    username VARCHAR(255) REFERENCES users(username) ON DELETE CASCADE,
     movie_id INT REFERENCES movies(id) ON DELETE CASCADE
 );
 
@@ -41,13 +41,13 @@ INSERT INTO Genres (name) VALUES
 ('action'),
 ('thriller');
 
-INSERT INTO Movies (name, year, genre_id) VALUES
-('Inception', 2010, (SELECT id FROM Genres WHERE name = 'action')),
-('The Terminator', 1984, (SELECT id FROM Genres WHERE name = 'action')),
-('Tropic Thunder', 2008, (SELECT id FROM Genres WHERE name = 'comedy')),
-('Borat', 2006, (SELECT id FROM Genres WHERE name = 'comedy')),
-('Interstellar', 2014, (SELECT id FROM Genres WHERE name = 'drama')),
-('Joker', 2019, (SELECT id FROM Genres WHERE name = 'drama'));
+INSERT INTO Movies (name, year, genre_name) VALUES
+('Inception', 2010, 'action'),
+('The Terminator', 1984, 'action'),
+('Tropic Thunder', 2008, 'comedy'),
+('Borat', 2006, 'comedy'),
+('Interstellar', 2014, 'drama'),
+('Joker', 2019, 'drama');
 
 INSERT INTO users (username, name, password, year_of_birth) VALUES 
     ('reimarii', 'Reima Riihimäki', 'qwerty123', 1986),

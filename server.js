@@ -33,52 +33,66 @@ async function connectDB() {
   }
 }
 
-app.post('/genres', (req, res) => {
+app.post('/genres', async (req, res) => {
   const { name } = req.body;
+  const result = await pool.query('INSERT INTO genres (name) VALUES ($1) RETURNING *', [name]);
   res.send('New genre created');
 });
 
-app.post('/movies', (req, res) => {
-  const { name, year, genreId } = req.body;
+app.post('/movies', async (req, res) => {
+  const { name, year, genreName } = req.body;
+  const result = await pool.query(
+    'INSERT INTO movies (name, year, genre_name) VALUES ($1, $2, $3) RETURNING *',
+    [name, year, genreName]
+  );
   res.send('Movie added');
 });
 
-app.get('/movies/:id', (req, res) => {
+app.get('/movies/:id', async (req, res) => {
   const { id } = req.params;
-  res.send('Movie fetched');
+  const result = await pool.query('SELECT * FROM movies WHERE id = $1', [id]);
+
+  if (result.rows.length === 0) {
+    return res.status(404).send('Movie not found');
+  }
+
+  res.json(result.rows[0]);
 });
 
-app.delete('/movies/:id', (req, res) => {
+app.delete('/movies/:id', async (req, res) => {
   const { id } = req.params;
+  const result = await pool.query('DELETE FROM movies WHERE id = $1 RETURNING *', [id]);
   res.send('Movie deleted');
 });
 
-app.get('/movies', (req, res) => {
-  const { } = req.query;
-  res.send('All movies fetched');
+app.get('/movies', async (req, res) => {
+  const result = await pool.query('SELECT * FROM movies');
+  res.json(result.rows);
 });
 
-app.get('/movies/search', (req, res) => {
-  const { keyword } = req.query;
-  res.send('Movies matching keyword fetched');
-});
-
-app.post('/users', (req, res) => {
+app.post('/users', async (req, res) => {
   const { name, username, password, yearOfBirth } = req.body;
+  const result = await pool.query(
+    'INSERT INTO users (name, username, password, year_of_birth) VALUES ($1, $2, $3, $4) RETURNING *',
+    [name, username, password, yearOfBirth]
+  );
   res.send('User created');
 });
 
-app.post('/reviews', (req, res) => {
+app.post('/reviews', async (req, res) => {
   const { username, stars, reviewText, movieId } = req.body;
+  const result = await pool.query(
+    'INSERT INTO reviews (username, stars, review_text, movie_id) VALUES ($1, $2, $3, $4) RETURNING *',
+    [username, stars, reviewText, movieId]
+  );
   res.send('Review added');
 });
 
-app.post('/favorites', (req, res) => {
+app.post('/favorites', async (req, res) => {
   const { username, movieId } = req.body;
+  const result = await pool.query(
+    'INSERT INTO favorites (username, movie_id) VALUES ($1, $2) RETURNING *',
+    [username, movieId]
+  );
   res.send('Favorite movie added');
-});
-
-app.get('/favorites/:username', (req, res) => {
-  const { username } = req.params;
-  res.send('Favorite movies fetched');
 });
